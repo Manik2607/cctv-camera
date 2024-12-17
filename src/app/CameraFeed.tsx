@@ -15,6 +15,11 @@ const CameraStream = () => {
   const [threshImage, setThreshImage] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
+  // parameters
+  const [threshold_factor, setThresholdFactor] = useState(25);
+  const [motion_factor, setMotionFactor] = useState(1000);
+  const [intervel, setIntervel] = useState(100);
+
   const startVideoStream = async (deviceId: string) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -55,7 +60,7 @@ const CameraStream = () => {
 
     try {
       const res = await axios.post(
-        "https://ap-thinking-invest-trust.trycloudflare.com/upload_frame/",
+        `https://ap-thinking-invest-trust.trycloudflare.com/upload_frame/?threshold_factor=${threshold_factor}&motion_factor=${motion_factor}`,
         formData,
         {
           headers: {
@@ -96,7 +101,7 @@ const CameraStream = () => {
             if (blob) sendFrame(blob);
           }, "image/jpeg");
         }
-      }, 500);
+      }, intervel);
 
       setIntervalId(id);
     }
@@ -174,6 +179,59 @@ const CameraStream = () => {
         >
           Stop Streaming
         </button>
+      </div>
+
+      <div className="mt-6 w-full max-w-md">
+        <label
+          htmlFor="threshold-factor"
+          className="block text-gray-700 text-sm font-medium mb-2"
+        >
+          Threshold Factor: {threshold_factor}
+        </label>
+        <input
+          id="threshold-factor"
+          type="range"
+          min="0"
+          max="100"
+          value={threshold_factor}
+          onChange={(e) => setThresholdFactor(Number(e.target.value))}
+          className="w-full"
+        />
+      </div>
+
+      <div className="mt-6 w-full max-w-md">
+        <label
+          htmlFor="motion-factor"
+          className="block text-gray-700 text-sm font-medium mb-2"
+        >
+          Motion Factor: {motion_factor}
+        </label>
+        <input
+          id="motion-factor"
+          type="range"
+          min="0"
+          max="5000"
+          value={motion_factor}
+          onChange={(e) => setMotionFactor(Number(e.target.value))}
+          className="w-full"
+        />
+      </div>
+      <div className="mt-6 w-full max-w-md">
+        <label
+          htmlFor="Intervel"
+          className="block text-gray-700 text-sm font-medium mb-2"
+        >
+          intervel between frames: {intervel}
+        </label>
+        <input
+          id="interval"
+          type="range"
+          min="0"
+          max="1000"
+          value={intervel}
+          onChange={(e) => setIntervel(Number(e.target.value))}
+          className="w-full"
+        />
       </div>
 
       {response && (
