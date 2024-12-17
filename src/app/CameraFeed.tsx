@@ -11,6 +11,8 @@ const CameraStream = () => {
   const [selectedDeviceId, setSelectedDeviceId] = useState<
     string | undefined
   >();
+  const [processedFrame, setProcessedFrame] = useState<string | null>(null);
+  const [threshImage, setThreshImage] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const startVideoStream = async (deviceId: string) => {
@@ -52,7 +54,7 @@ const CameraStream = () => {
     formData.append("file", blob, "frame.jpg");
 
     try {
-      const response = await axios.post(
+      const res = await axios.post(
         "https://separation-expanding-incidents-had.trycloudflare.com/upload_frame/",
         formData,
         {
@@ -61,9 +63,19 @@ const CameraStream = () => {
           },
         }
       );
-      setResponse(JSON.stringify(response.data));
+      setResponse(JSON.stringify(res.data.message));
+      if (res.data.processed_frame) {
+        setProcessedFrame(res.data.processed_frame);
+      }
+      if (res.data.thresh_image) {
+        setThreshImage(res.data.thresh_image);
+      }
     } catch (error) {
-      console.error("Error sending frame:", error);
+      if (axios.isAxiosError(error) && !error.response) {
+        console.error("Network error:", error);
+      } else {
+        console.error("Error sending frame:", error);
+      }
     }
   };
 
@@ -169,6 +181,33 @@ const CameraStream = () => {
           <p>{response}</p>
         </div>
       )}
+      <div className="flex flex-row items-center justify-center mt-6">
+        {processedFrame && (
+          <div className="mt-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">
+              Processed Frame
+            </h2>
+            <img
+              src={`data:image/jpeg;base64,${processedFrame}`}
+              alt="Processed Frame"
+              className="w-full max-w-4xl border border-gray-300 rounded-lg shadow-lg"
+            />
+          </div>
+        )}
+
+        {threshImage && (
+          <div className="mt-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">
+              Threshold Image
+            </h2>
+            <img
+              src={`data:image/jpeg;base64,${threshImage}`}
+              alt="Threshold Image"
+              className="w-full max-w-4xl border border-gray-300 rounded-lg shadow-lg"
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
