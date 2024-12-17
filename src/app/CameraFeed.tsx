@@ -104,11 +104,13 @@ const CameraStream = () => {
   }, [selectedDeviceId]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Camera Stream</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+        Camera Stream
+      </h1>
 
       {devices.length > 0 && (
-        <div className="mb-4">
+        <div className="mb-4 w-full max-w-md">
           <label
             htmlFor="camera-select"
             className="block text-gray-700 text-sm font-medium mb-2"
@@ -134,10 +136,10 @@ const CameraStream = () => {
         ref={videoRef}
         autoPlay
         muted
-        className="w-4/5 border border-gray-300 rounded-lg shadow-lg"
+        className="w-full max-w-4xl border border-gray-300 rounded-lg shadow-lg"
       />
 
-      <div className="flex gap-4 mt-6">
+      <div className="flex flex-col sm:flex-row gap-4 mt-6">
         <button
           onClick={startStreaming}
           disabled={streaming}
@@ -163,7 +165,7 @@ const CameraStream = () => {
       </div>
 
       {response && (
-        <div className="mt-6 p-4 bg-green-100 text-green-800 rounded-md shadow">
+        <div className="mt-6 p-4 bg-green-100 text-green-800 rounded-md shadow w-full max-w-4xl">
           <p>{response}</p>
         </div>
       )}
