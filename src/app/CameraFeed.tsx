@@ -13,7 +13,6 @@ const CameraStream = () => {
   >();
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  // Start video stream with the selected webcam
   const startVideoStream = async (deviceId: string) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -21,14 +20,13 @@ const CameraStream = () => {
       });
 
       if (videoRef.current) {
-        videoRef.current.srcObject = stream; // Set the stream as the source for the video element
+        videoRef.current.srcObject = stream;
       }
     } catch (error) {
       console.error("Error accessing camera:", error);
     }
   };
 
-  // Get available video devices (cameras)
   useEffect(() => {
     const getDevices = async () => {
       const devices = await navigator.mediaDevices.enumerateDevices();
@@ -37,21 +35,20 @@ const CameraStream = () => {
       );
       setDevices(videoDevices);
       if (videoDevices.length > 0) {
-        setSelectedDeviceId(videoDevices[0].deviceId); // Default to the first device
+        setSelectedDeviceId(videoDevices[0].deviceId);
       }
     };
 
     getDevices();
   }, []);
 
-  // Capture frames and send them to the server using axios
   const sendFrame = async (blob: Blob) => {
     const formData = new FormData();
     formData.append("file", blob, "frame.jpg");
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/upload_frame/",
+        "https://separation-expanding-incidents-had.trycloudflare.com/upload_frame/",
         formData,
         {
           headers: {
@@ -59,14 +56,12 @@ const CameraStream = () => {
           },
         }
       );
-      //   console.log(response.data);
       setResponse(JSON.stringify(response.data));
     } catch (error) {
       console.error("Error sending frame:", error);
     }
   };
 
-  // Start streaming frames to the server
   const startStreaming = () => {
     if (!streaming && selectedDeviceId) {
       setStreaming(true);
@@ -84,13 +79,12 @@ const CameraStream = () => {
             if (blob) sendFrame(blob);
           }, "image/jpeg");
         }
-      }, 500); // Send a frame every 100ms
+      }, 500);
 
       setIntervalId(id);
     }
   };
 
-  // Stop streaming frames to the server
   const stopStreaming = () => {
     if (streaming) {
       setStreaming(false);
@@ -98,7 +92,6 @@ const CameraStream = () => {
     }
   };
 
-  // Start the video stream when the selected camera changes
   useEffect(() => {
     if (selectedDeviceId) {
       startVideoStream(selectedDeviceId);
@@ -106,17 +99,24 @@ const CameraStream = () => {
   }, [selectedDeviceId]);
 
   return (
-    <div>
-      <h1>Camera Stream</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+        Camera Stream
+      </h1>
 
-      {/* Camera selection dropdown */}
       {devices.length > 0 && (
-        <div>
-          <label htmlFor="camera-select">Choose Camera: </label>
+        <div className="mb-4 w-full max-w-md">
+          <label
+            htmlFor="camera-select"
+            className="block text-gray-700 text-sm font-medium mb-2"
+          >
+            Choose Camera:
+          </label>
           <select
             id="camera-select"
             onChange={(e) => setSelectedDeviceId(e.target.value)}
             value={selectedDeviceId}
+            className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
             {devices.map((device) => (
               <option key={device.deviceId} value={device.deviceId}>
@@ -127,32 +127,43 @@ const CameraStream = () => {
         </div>
       )}
 
-      {/* Video element */}
       <video
         ref={videoRef}
         autoPlay
         muted
-        width="80%"
-        style={{ border: "1px solid #ccc" }}
+        className="w-full max-w-md border border-gray-300 rounded-lg shadow-lg"
       />
 
-      <div id="controls" style={{ marginTop: "20px" }}>
+      <div className="flex gap-4 mt-6">
         <button
           onClick={startStreaming}
           disabled={streaming}
-          style={{ padding: "10px 20px", fontSize: "16px" }}
+          className={`px-6 py-2 font-medium text-white rounded-md shadow-md transition-all duration-300 ${
+            streaming
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600"
+          }`}
         >
           Start Streaming
         </button>
         <button
           onClick={stopStreaming}
           disabled={!streaming}
-          style={{ padding: "10px 20px", fontSize: "16px" }}
+          className={`px-6 py-2 font-medium text-white rounded-md shadow-md transition-all duration-300 ${
+            !streaming
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-red-500 hover:bg-red-600"
+          }`}
         >
           Stop Streaming
         </button>
-        {response && <p>{response}</p>}
       </div>
+
+      {response && (
+        <div className="mt-6 p-4 bg-green-100 text-green-800 rounded-md shadow w-full max-w-md">
+          <p>{response}</p>
+        </div>
+      )}
     </div>
   );
 };
