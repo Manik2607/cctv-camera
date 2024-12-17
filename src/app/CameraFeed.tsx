@@ -55,7 +55,7 @@ const CameraStream = () => {
 
     try {
       const res = await axios.post(
-        "https://separation-expanding-incidents-had.trycloudflare.com/upload_frame/",
+        "https://ap-thinking-invest-trust.trycloudflare.com/upload_frame/",
         formData,
         {
           headers: {
