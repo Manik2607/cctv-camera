@@ -19,6 +19,7 @@ const CameraStream = () => {
   const [threshold_factor, setThresholdFactor] = useState(25);
   const [motion_factor, setMotionFactor] = useState(1000);
   const [intervel, setIntervel] = useState(100);
+  const [endpoint, setEndpoint] = useState("http://192.168.31.82:8000");
 
   const startVideoStream = async (deviceId: string) => {
     try {
@@ -60,7 +61,7 @@ const CameraStream = () => {
 
     try {
       const res = await axios.post(
-        `https://rare-sensible-mouse.ngrok-free.app/upload_frame/?threshold_factor=${threshold_factor}&motion_factor=${motion_factor}`,
+        `${endpoint}/upload_frame/?threshold_factor=${threshold_factor}&motion_factor=${motion_factor}`,
         formData,
         {
           headers: {
@@ -266,6 +267,12 @@ const CameraStream = () => {
           </div>
         )}
       </div>
+      <input
+        type="text"
+        value={endpoint}
+        onChange={(e) => setEndpoint(e.target.value)}
+        className="mt-6 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
     </div>
   );
 };
