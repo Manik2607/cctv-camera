@@ -60,7 +60,7 @@ const CameraStream = () => {
 
     try {
       const res = await axios.post(
-        `https://ap-thinking-invest-trust.trycloudflare.com/upload_frame/?threshold_factor=${threshold_factor}&motion_factor=${motion_factor}`,
+        `https://rare-sensible-mouse.ngrok-free.app/upload_frame/?threshold_factor=${threshold_factor}&motion_factor=${motion_factor}`,
         formData,
         {
           headers: {
